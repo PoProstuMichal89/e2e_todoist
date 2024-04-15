@@ -6,8 +6,8 @@ import com.microsoft.playwright.options.AriaRole;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import pl.mmazur.tests.BaseTest;
-import pl.mmazur.tests.api.request.ApiRequest;
-import pl.mmazur.tests.api.steps.ApiSteps;
+import pl.mmazur.api.request.ApiRequest;
+import pl.mmazur.api.steps.ApiSteps;
 import pl.mmazur.utils.ResponseUtils;
 import pl.mmazur.utils.StringUtils;
 

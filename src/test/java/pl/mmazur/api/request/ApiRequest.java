@@ -1,4 +1,4 @@
-package pl.mmazur.tests.api.request;
+package pl.mmazur.api.request;
 
 import com.google.gson.JsonObject;
 import com.microsoft.playwright.APIRequestContext;

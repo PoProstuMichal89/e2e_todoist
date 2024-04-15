@@ -1,11 +1,11 @@
-package pl.mmazur.tests.api.steps;
+package pl.mmazur.api.steps;
 
 import com.google.gson.JsonObject;
 import com.microsoft.playwright.APIRequestContext;
 import com.microsoft.playwright.APIResponse;
 import com.microsoft.playwright.assertions.PlaywrightAssertions;
 import org.assertj.core.api.Assertions;
-import pl.mmazur.tests.api.request.ApiRequest;
+import pl.mmazur.api.request.ApiRequest;
 import pl.mmazur.utils.ResponseUtils;
 
 public class ApiSteps {
