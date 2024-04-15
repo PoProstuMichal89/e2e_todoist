@@ -2,7 +2,9 @@ package pl.mmazur.tests.tasks;
 
 import com.google.gson.JsonObject;
 import com.microsoft.playwright.APIResponse;
+import com.microsoft.playwright.Page;
 import com.microsoft.playwright.assertions.PlaywrightAssertions;
+import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.RequestOptions;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
@@ -14,30 +16,34 @@ import pl.mmazur.utils.ResponseUtils;
 import pl.mmazur.utils.StringUtils;
 
 class CompleteTaskTest extends BaseTest {
-     private String projectId;
-     
+    private String projectId;
+
     @AfterEach
-    void afterEachTest(){
+    void afterEachTest() {
         ApiRequest.delete(apiContext, "projects/" + projectId);
     }
 
-     @Test
-     void should_be_able_to_complete_task_test(){
-         //GIVEN
-         final String projectName = StringUtils.getRandomName();
-         final String taskName = "Napisać testy do UI i API";
+    @Test
+    void should_be_able_to_complete_task_test() {
+        //GIVEN
+        final String projectName = StringUtils.getRandomName();
+        final String taskName = "Napisać testy do UI i API";
 
-         final var  response = ApiSteps.createProject(apiContext, projectName);
-         projectId = ResponseUtils.apiResponseToJsonObject(response).get("id").getAsString();
+        final var response = ApiSteps.createProject(apiContext, projectName);
+        projectId = ResponseUtils.apiResponseToJsonObject(response).get("id").getAsString();
+        log.info("Vreate projcet with id {}", projectId);
 
-         JsonObject taskPayload = new JsonObject();
-         taskPayload.addProperty("content", taskName);
-         taskPayload.addProperty("project_id", projectId);
-         final var taskResponse = apiContext.post("tasks", RequestOptions.create().setData(taskPayload));
+        final var taskResponse = ApiSteps.createTask(apiContext, taskName, projectId);
+        String taskId = ResponseUtils.apiResponseToJsonObject(taskResponse).get("id").getAsString();
+        log.info("Create task with id {}", taskId);
+        page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName(projectName)).click();
 
-         PlaywrightAssertions.assertThat(taskResponse).isOK();
-         Assertions.assertThat(ResponseUtils.apiResponseToJsonObject(taskResponse).get("id").getAsString()).isNotNull();
-         Assertions.assertThat(ResponseUtils.apiResponseToJsonObject(taskResponse).get("content").getAsString()).isEqualTo(taskName);
-         page.waitForTimeout(15000);
-     }
+        //WHEN
+        PlaywrightAssertions.assertThat(page.locator("div[class=task_content]:has-text(\"" + taskName + "\")")).isVisible();
+        page.locator("button:left-of(:text(\""+taskName+"\"))").first().click();
+
+        //THEN
+        PlaywrightAssertions.assertThat(page.locator("div[class=task_content]:has-text(\"" + taskName + "\")")).not().isVisible();
+
+    }
 }

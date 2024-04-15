@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.microsoft.playwright.APIRequestContext;
 import com.microsoft.playwright.APIResponse;
 import com.microsoft.playwright.assertions.PlaywrightAssertions;
+import com.microsoft.playwright.options.RequestOptions;
 import org.assertj.core.api.Assertions;
 import pl.mmazur.api.request.ApiRequest;
 import pl.mmazur.utils.ResponseUtils;
@@ -25,4 +26,18 @@ public class ApiSteps {
 
         return apiResponse;
     }
+
+    public static APIResponse createTask(APIRequestContext apiContext, String taskName, String projectId){
+        JsonObject taskPayload = new JsonObject();
+        taskPayload.addProperty("content", taskName);
+        taskPayload.addProperty("project_id", projectId);
+        final var taskResponse = apiContext.post("tasks", RequestOptions.create().setData(taskPayload));
+
+        PlaywrightAssertions.assertThat(taskResponse).isOK();
+        Assertions.assertThat(ResponseUtils.apiResponseToJsonObject(taskResponse).get("id").getAsString()).isNotNull();
+        Assertions.assertThat(ResponseUtils.apiResponseToJsonObject(taskResponse).get("content").getAsString()).isEqualTo(taskName);
+
+        return taskResponse;
+    }
+
 }
